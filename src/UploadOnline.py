@@ -1,8 +1,11 @@
 import requests
-from Credentials import getimgbbApiKey
+from dotenv import load_dotenv
+import os
+
 class UploadOnline:
     def __init__(self):
-        self.apiKey = getimgbbApiKey()
+        load_dotenv()
+        self.apiKey = os.getenv("imgbbApiKey")
 
     def uploadImage(self, imagePath):
         endpoint = "https://api.imgbb.com/1/upload"
