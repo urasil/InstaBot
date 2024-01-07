@@ -35,4 +35,22 @@ def removeImages(folderPath):
             os.remove(filePath)
             
 
-
+def checkForScraping(quoteScraper, imageScraper):
+    files = os.listdir("posts")
+    if len(files) == 0:
+        try:
+            quoteScraper.writeQuotesToTextFile()
+            print("quotes written to text file")
+            quoteScraper.updateQuoteMap()
+        except Exception as e:
+            print("Error while writing quotes to text file: ", e)
+            return 
+        requiredNum = quoteScraper.getNumQuotes()
+        print("required num: ", requiredNum)
+        try:
+            imageScraper.getImages(1, requiredNum)
+        except Exception as e:
+            print("Error while scraping images: ", e)
+            return True
+        return True
+    else: return False

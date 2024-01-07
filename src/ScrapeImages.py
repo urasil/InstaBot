@@ -8,7 +8,6 @@ from Helpers import isLineInFile
 
 class ScrapeImages:
     def __init__(self):
-        self.driver = webdriver.Chrome()
         self.imageURLs = set()
         self.natureURL = "https://www.google.com/search?q=nature&tbm=isch&ved=2ahUKEwjlh-_AqcKDAxWf_7sIHbG4CWQQ2-cCegQIABAA&oq=nature&gs_lcp=CgNpbWcQAzIKCAAQgAQQigUQQzINCAAQgAQQigUQQxCxAzIFCAAQgAQyCggAEIAEEIoFEEMyBQgAEIAEMggIABCABBCxAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQ6BAgjECc6BwgAEIAEEBM6CAgAEAgQHhATUNYGWNYGYIUKaABwAHgAgAGMAYgBjwKSAQMwLjKYAQCgAQGqAQtnd3Mtd2l6LWltZ8ABAQ&sclient=img&ei=ROeVZeXVGZ__7_UPsfGmoAY&bih=631&biw=1280&rlz=1C1ONGR_en-GBUS1087US1087"
         self.skips = 0
@@ -26,15 +25,15 @@ class ScrapeImages:
             print("Error while downloading image: ", e)
 
     def imagesFromGoogle(self, delay, maxImages):
-        
+        driver = webdriver.Chrome()
         def scrollDown():
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(delay)
 
-        self.driver.get(self.natureURL)
+        driver.get(self.natureURL)
         while len(self.imageURLs) + self.skips < maxImages:
             scrollDown()
-            thumbnails = self.driver.find_elements(By.CLASS_NAME, "Q4LuWd")
+            thumbnails = driver.find_elements(By.CLASS_NAME, "Q4LuWd")
             for thumbnail in thumbnails[len(self.imageURLs) + self.skips: maxImages]:
                 try:
                     thumbnail.click()
@@ -42,7 +41,7 @@ class ScrapeImages:
                 except Exception as e:
                     print("Error while clicking image")
                     continue
-                images = self.driver.find_elements(By.CLASS_NAME, "iPVvYb")
+                images = driver.find_elements(By.CLASS_NAME, "iPVvYb")
                 for image in images:
                     if image.get_attribute('src') in self.imageURLs or isLineInFile("imageURLs.txt", image.get_attribute('src')):
                         maxImages += 1
@@ -57,8 +56,12 @@ class ScrapeImages:
                         break
     def getImages(self, delay, requiredNum):
         self.imagesFromGoogle(delay, requiredNum)
+        count = 0
         for i, url in enumerate(self.imageURLs):
-            self.downloadImages("imgs\\", url, f"image{i}.jpg")
-        
-obj = ScrapeImages()
-obj.getImages(1, 7)
+            try:
+                self.downloadImages("imgs\\", url, f"image{i}.jpg")
+            except Exception as e:
+                print("Error while downloading image: ", e)
+                count += 1
+                continue
+        print(f"Number of images not downloaded: {count}")
