@@ -1,8 +1,8 @@
 import requests
-
+from Credentials import getimgbbApiKey
 class UploadOnline:
     def __init__(self):
-        self.apiKey = "277e26186d5cf39d33121cfebc3c07e4"
+        self.apiKey = getimgbbApiKey()
 
     def uploadImage(self, imagePath):
         endpoint = "https://api.imgbb.com/1/upload"

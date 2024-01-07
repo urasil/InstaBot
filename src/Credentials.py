@@ -48,3 +48,7 @@ def makeApiCall(url, endpointParams, type):
 	response['jsonData'] = json.loads(data.content) # response data from the api
 
 	return response
+
+def getimgbbApiKey():
+	apiKey = "277e26186d5cf39d33121cfebc3c07e4"
+	return apiKey
